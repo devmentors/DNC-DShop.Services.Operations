@@ -31,8 +31,8 @@ namespace DShop.Services.Operations.Services
             };
         }
 
-        public async Task CreateAsync(Guid id, string name, Guid userId, string origin, string resource,
-            DateTime createdAt)
+        public async Task CreateAsync(Guid id, string name, Guid userId, 
+            string origin, string resource, DateTime createdAt)
         {
             var operation = new Operation(id, name, userId, origin, resource, createdAt);
             await _operationRepository.CreateAsync(operation);

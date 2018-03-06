@@ -7,6 +7,7 @@ using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
 using DShop.Messages.Commands.Customers;
 using DShop.Services.Operations.Domain;
+using DShop.Services.Operations.Subscriptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -47,7 +48,8 @@ namespace DShop.Services.Operations
                 app.UseDeveloperExceptionPage();
             }
             app.UseMvc();
-            app.UseRabbitMq();
+            app.UseRabbitMq()
+                .SubscribeCustomers();
             applicationLifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
     }
