@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace DShop.Services.Operations.Subscriptions
 {
-    public static class CustomerSubscriptions
+    public static class MessagesSubscriptions
     {
         private static Assembly _messagesAssembly => typeof(CreateCustomer).Assembly;
 
