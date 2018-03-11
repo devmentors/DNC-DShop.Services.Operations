@@ -7,8 +7,7 @@ using DShop.Services.Operations.Services;
 
 namespace DShop.Services.Operations.Handlers
 {
-    public class GenericEventHandler : IEventHandler<CustomerCreated>,
-        IEventHandler<CreateCustomerRejected>
+    public class GenericEventHandler<TEvent> : IEventHandler<TEvent> where TEvent : IEvent
     {
         private readonly IOperationsService _operationsService;
 
@@ -17,11 +16,17 @@ namespace DShop.Services.Operations.Handlers
             _operationsService = operationsService;
         }
 
-        public async Task HandleAsync(CustomerCreated @event, ICorrelationContext context)
-            => await CompleteAsync(context);
-
-        public async Task HandleAsync(CreateCustomerRejected @event, ICorrelationContext context)
-            => await RejectAsync(@event, context);
+        public async Task HandleAsync(TEvent @event, ICorrelationContext context)
+        {
+            if(@event is IRejectedEvent rejectedEvent)
+            {
+                await RejectAsync(rejectedEvent, context);
+            }
+            else
+            {
+                await CompleteAsync(context);
+            }
+        }
 
         private async Task CompleteAsync(ICorrelationContext context)
         {

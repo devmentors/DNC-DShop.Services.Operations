@@ -1,20 +1,42 @@
 using DShop.Common.RabbitMq;
+using DShop.Messages.Commands;
 using DShop.Messages.Commands.Customers;
-using DShop.Messages.Events.Customers;
+using DShop.Messages.Events;
+using System;
+using System.Linq;
+using System.Reflection;
 
 namespace DShop.Services.Operations.Subscriptions
 {
     public static class CustomerSubscriptions
     {
-        public static IBusSubscriber SubscribeCustomers(this IBusSubscriber subscriber)
-            => subscriber.SubscribeCommands()
-                         .SubscribeEvents();
+        private static Assembly _messagesAssembly => typeof(CreateCustomer).Assembly;
 
-        private static IBusSubscriber SubscribeCommands(this IBusSubscriber subscriber)
-            => subscriber.SubscribeCommand<CreateCustomer>();
+        public static IBusSubscriber SubscribeAllCommands(this IBusSubscriber subscriber)
+            => subscriber.SubscribeAllMessages<ICommand>(nameof(IBusSubscriber.SubscribeCommand));
 
-        private static IBusSubscriber SubscribeEvents(this IBusSubscriber subscriber)
-            => subscriber.SubscribeEvent<CustomerCreated>()
-                .SubscribeEvent<CreateCustomerRejected>();
+        public static IBusSubscriber SubscribeAllEvents(this IBusSubscriber subscriber)
+            => subscriber.SubscribeAllMessages<IEvent>(nameof(IBusSubscriber.SubscribeEvent));
+
+        private static IBusSubscriber SubscribeAllMessages<TMessage>
+            (this IBusSubscriber subscriber, string subscribeMethod)
+        {            
+            var messageTypes = _messagesAssembly
+                .GetTypes()
+                .Where(t => t.IsClass && typeof(TMessage).IsAssignableFrom(t))
+                .ToList();
+
+            messageTypes.ForEach(mt =>
+            {
+                var subscriberType = subscriber.GetType();
+
+                subscriberType
+                .GetMethod(subscribeMethod)
+                .MakeGenericMethod(mt)
+                .Invoke(subscriber, new object[] { null });
+            });
+
+            return subscriber;
+        }
     }
 }
