@@ -26,6 +26,7 @@ namespace DShop.Services.Operations.Services
                 Resource = operation.Resource,
                 Message = operation.Message,
                 State = operation.State,
+                Code = operation.Code,
                 Completed = operation.State == States.Completed,
                 Success = operation.Success
             };

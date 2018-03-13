@@ -9,6 +9,7 @@ namespace DShop.Services.Operations.Dtos
         public string Resource { get; set; }
         public string Message { get; set; }
         public string State { get; set; }
+        public string Code { get; set; }
         public bool Completed { get; set; }
         public bool Success { get; set; }        
     }
