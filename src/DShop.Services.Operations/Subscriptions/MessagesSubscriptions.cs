@@ -2,6 +2,7 @@ using DShop.Common.RabbitMq;
 using DShop.Messages.Commands;
 using DShop.Messages.Commands.Customers;
 using DShop.Messages.Events;
+using DShop.Messages.Events.Operations;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -24,17 +25,13 @@ namespace DShop.Services.Operations.Subscriptions
             var messageTypes = _messagesAssembly
                 .GetTypes()
                 .Where(t => t.IsClass && typeof(TMessage).IsAssignableFrom(t))
+                .Where(t => t != typeof(OperationUpdated))
                 .ToList();
 
-            messageTypes.ForEach(mt =>
-            {
-                var subscriberType = subscriber.GetType();
-
-                subscriberType
-                .GetMethod(subscribeMethod)
-                .MakeGenericMethod(mt)
-                .Invoke(subscriber, new object[] { null });
-            });
+            messageTypes.ForEach(mt => subscriber.GetType()
+                    .GetMethod(subscribeMethod)
+                    .MakeGenericMethod(mt)
+                    .Invoke(subscriber, new object[] { null }));
 
             return subscriber;
         }
