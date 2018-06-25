@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/DShop.Services.Operations/bin/Debug/netcoreapp2.0/DShop.Services.Operations.dll",
+            "program": "${workspaceFolder}/src/DShop.Services.Operations/bin/Debug/netcoreapp2.1/DShop.Services.Operations.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/DShop.Services.Operations",
             "stopAtEntry": false,
