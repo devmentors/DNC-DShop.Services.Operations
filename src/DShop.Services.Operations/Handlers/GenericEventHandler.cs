@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 using DShop.Common.Handlers;
+using DShop.Common.Messages;
 using DShop.Common.RabbitMq;
-using DShop.Messages.Events;
-using DShop.Messages.Events.Customers;
-using DShop.Messages.Events.Operations;
+using DShop.Services.Operations.Messages.Events;
 using DShop.Services.Operations.Services;
 
 namespace DShop.Services.Operations.Handlers
@@ -47,7 +46,7 @@ namespace DShop.Services.Operations.Handlers
         private async Task PublishOperationUpdatedAsync(ICorrelationContext context)
         {
             var operation = await _operationsService.GetAsync(context.Id);
-            await _busPublisher.PublishEventAsync(new OperationUpdated(context.Id,
+            await _busPublisher.PublishAsync(new OperationUpdated(context.Id,
                 context.UserId, context.Name, context.Origin, context.Resource,
                     operation.State, operation.Code, operation.Message), context);            
         }

@@ -6,8 +6,6 @@ using DShop.Common.Handlers;
 using DShop.Common.Mongo;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
-using DShop.Messages.Commands;
-using DShop.Messages.Commands.Customers;
 using DShop.Services.Operations.Domain;
 using DShop.Services.Operations.Handlers;
 using DShop.Services.Operations.Subscriptions;

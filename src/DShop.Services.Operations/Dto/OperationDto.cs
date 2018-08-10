@@ -1,6 +1,6 @@
 using System;
 
-namespace DShop.Services.Operations.Dtos
+namespace DShop.Services.Operations.Dto
 {
     public class OperationDto
     {

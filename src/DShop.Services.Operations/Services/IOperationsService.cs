@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using DShop.Services.Operations.Dtos;
+using DShop.Services.Operations.Dto;
 
 namespace DShop.Services.Operations.Services
 {

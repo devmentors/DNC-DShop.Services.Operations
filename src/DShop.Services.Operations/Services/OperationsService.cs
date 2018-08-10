@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using DShop.Services.Operations.Domain;
-using DShop.Services.Operations.Dtos;
+using DShop.Services.Operations.Dto;
 using DShop.Services.Operations.Repositories;
 
 namespace DShop.Services.Operations.Services

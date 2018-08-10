@@ -1,8 +1,6 @@
+using DShop.Common.Messages;
 using DShop.Common.RabbitMq;
-using DShop.Messages.Commands;
-using DShop.Messages.Commands.Customers;
-using DShop.Messages.Events;
-using DShop.Messages.Events.Operations;
+using DShop.Services.Operations.Messages.Events;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -11,7 +9,7 @@ namespace DShop.Services.Operations.Subscriptions
 {
     public static class MessagesSubscriptions
     {
-        private static Assembly _messagesAssembly => typeof(CreateCustomer).Assembly;
+        private static Assembly _messagesAssembly => typeof(MessagesSubscriptions).Assembly;
 
         public static IBusSubscriber SubscribeAllCommands(this IBusSubscriber subscriber)
             => subscriber.SubscribeAllMessages<ICommand>(nameof(IBusSubscriber.SubscribeCommand));
