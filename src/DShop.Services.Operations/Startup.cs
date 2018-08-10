@@ -2,6 +2,8 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using DShop.Common.AppMetrics;
+using DShop.Common.Dispatchers;
 using DShop.Common.Handlers;
 using DShop.Common.Mongo;
 using DShop.Common.Mvc;
@@ -28,7 +30,8 @@ namespace DShop.Services.Operations
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddDefaultJsonOptions();
+            services.AddCustomMvc();
+            services.AddAppMetrics();
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                     .AsImplementedInterfaces();
@@ -36,7 +39,6 @@ namespace DShop.Services.Operations
             builder.AddRabbitMq();
             builder.AddMongoDB();
             builder.AddMongoDBRepository<Operation>("Operations");
-
             builder.RegisterGeneric(typeof(GenericCommandHandler<>))
                 .As(typeof(ICommandHandler<>));
             builder.RegisterGeneric(typeof(GenericEventHandler<>))
@@ -54,12 +56,12 @@ namespace DShop.Services.Operations
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAppMetrics(applicationLifetime);
+            app.UseErrorHandler();
             app.UseMvc();
-
             app.UseRabbitMq()
                 .SubscribeAllCommands()
                 .SubscribeAllEvents();
-
             applicationLifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
     }
