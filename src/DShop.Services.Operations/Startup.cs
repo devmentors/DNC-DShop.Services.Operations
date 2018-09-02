@@ -9,6 +9,7 @@ using DShop.Common.Handlers;
 using DShop.Common.Mongo;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
+using DShop.Common.Swagger;
 using DShop.Services.Operations.Domain;
 using DShop.Services.Operations.Handlers;
 using DShop.Services.Operations.Subscriptions;
@@ -32,14 +33,15 @@ namespace DShop.Services.Operations
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddCustomMvc();
+            services.AddSwaggerDocs();
             services.AddConsul();
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                     .AsImplementedInterfaces();
             builder.Populate(services);
             builder.AddRabbitMq();
-            builder.AddMongoDB();
-            builder.AddMongoDBRepository<Operation>("Operations");
+            builder.AddMongo();
+            builder.AddMongoRepository<Operation>("Operations");
             builder.RegisterGeneric(typeof(GenericCommandHandler<>))
                 .As(typeof(ICommandHandler<>));
             builder.RegisterGeneric(typeof(GenericEventHandler<>))
@@ -57,6 +59,8 @@ namespace DShop.Services.Operations
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAllForwardedHeaders();
+            app.UseSwaggerDocs();
             app.UseErrorHandler();
             app.UseServiceId();
             app.UseMvc();
