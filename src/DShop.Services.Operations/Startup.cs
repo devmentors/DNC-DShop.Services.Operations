@@ -42,22 +42,22 @@ namespace DShop.Services.Operations
 
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
-                    .AsImplementedInterfaces();
+                .AsImplementedInterfaces();
             builder.Populate(services);
             builder.AddRabbitMq();
             builder.AddMongo();
             builder.AddMongoRepository<Operation>("Operations");
-            builder.RegisterGeneric(typeof(GenericCommandHandler<>))
-                .As(typeof(ICommandHandler<>));
             builder.RegisterGeneric(typeof(GenericEventHandler<>))
                 .As(typeof(IEventHandler<>));
-
+            builder.RegisterGeneric(typeof(GenericCommandHandler<>))
+                .As(typeof(ICommandHandler<>));
+            
             Container = builder.Build();
 
             return new AutofacServiceProvider(Container);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             IApplicationLifetime applicationLifetime, IConsulClient client,
             IStartupInitializer startupInitializer)
         {
@@ -65,21 +65,20 @@ namespace DShop.Services.Operations
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             app.UseAllForwardedHeaders();
             app.UseSwaggerDocs();
             app.UseErrorHandler();
             app.UseServiceId();
             app.UseMvc();
             app.UseRabbitMq()
-                .SubscribeAllCommands()
-                .SubscribeAllEvents();
+                .SubscribeAllMessages();
 
             var consulServiceId = app.UseConsul();
-            applicationLifetime.ApplicationStopped.Register(() => 
-            { 
-                client.Agent.ServiceDeregister(consulServiceId); 
-                Container.Dispose(); 
+            applicationLifetime.ApplicationStopped.Register(() =>
+            {
+                client.Agent.ServiceDeregister(consulServiceId);
+                Container.Dispose();
             });
 
             startupInitializer.InitializeAsync();

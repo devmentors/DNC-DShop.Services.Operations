@@ -2,10 +2,21 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <!-- <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <ProjectReference Include="..\..\..\DNC-DShop.Common\src\DShop.Common\DShop.Common.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <PackageReference Include="DShop.Common" Version="1.0.*" />
+  </ItemGroup> -->
+  <ItemGroup>
+    <PackageReference Include="Chronicle" Version="1.0.0" />
+    <PackageReference Include="DShop.Common" Version="1.0.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Messages\Notifications\Commands" />
+    <Folder Include="Messages\Notifications\Events" />
+    <Folder Include="Messages\Orders\Commands" />
+    <Folder Include="Messages\Products\Commands" />
+    <Folder Include="Messages\Products\Events" />
   </ItemGroup>
 </Project>
