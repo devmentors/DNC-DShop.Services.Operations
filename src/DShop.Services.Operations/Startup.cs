@@ -9,6 +9,7 @@ using DShop.Common.Handlers;
 using DShop.Common.Mongo;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
+using DShop.Common.Redis;
 using DShop.Common.Swagger;
 using DShop.Services.Operations.Domain;
 using DShop.Services.Operations.Handlers;
@@ -35,6 +36,8 @@ namespace DShop.Services.Operations
             services.AddCustomMvc();
             services.AddSwaggerDocs();
             services.AddConsul();
+            services.AddRedis();
+
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                     .AsImplementedInterfaces();
@@ -59,6 +62,7 @@ namespace DShop.Services.Operations
             {
                 app.UseDeveloperExceptionPage();
             }
+            
             app.UseAllForwardedHeaders();
             app.UseSwaggerDocs();
             app.UseErrorHandler();
@@ -67,6 +71,7 @@ namespace DShop.Services.Operations
             app.UseRabbitMq()
                 .SubscribeAllCommands()
                 .SubscribeAllEvents();
+
             var consulServiceId = app.UseConsul();
             applicationLifetime.ApplicationStopped.Register(() => 
             { 
