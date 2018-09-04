@@ -3,6 +3,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Consul;
+using DShop.Common;
 using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
 using DShop.Common.Handlers;
@@ -37,6 +38,7 @@ namespace DShop.Services.Operations
             services.AddSwaggerDocs();
             services.AddConsul();
             services.AddRedis();
+            services.AddInitializers(typeof(IMongoDbInitializer));
 
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
@@ -56,7 +58,8 @@ namespace DShop.Services.Operations
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            IApplicationLifetime applicationLifetime, IConsulClient client)
+            IApplicationLifetime applicationLifetime, IConsulClient client,
+            IStartupInitializer startupInitializer)
         {
             if (env.IsDevelopment() || env.EnvironmentName == "local")
             {
@@ -78,6 +81,8 @@ namespace DShop.Services.Operations
                 client.Agent.ServiceDeregister(consulServiceId); 
                 Container.Dispose(); 
             });
+
+            startupInitializer.InitializeAsync();
         }
     }
 }
