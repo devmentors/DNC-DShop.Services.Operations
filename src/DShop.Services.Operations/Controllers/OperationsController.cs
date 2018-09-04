@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using DShop.Services.Operations.Managers;
+using DShop.Common.Dispatchers;
+using DShop.Services.Operations.Dto;
 using DShop.Services.Operations.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,20 +9,18 @@ namespace DShop.Services.Operations.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class OperationsController : Controller
+    public class OperationsController : BaseController
     {
-        private readonly IOperationsService _operationsService;
-        private readonly IProcessOrchestrator _processOrchestrator;
+        private readonly IOperationsStorage _operationsStorage;
 
-        public OperationsController(IOperationsService operationsService,
-            IProcessOrchestrator processOrchestrator)
+        public OperationsController(IDispatcher dispatcher,
+            IOperationsStorage operationsStorage) : base(dispatcher)
         {
-            _operationsService = operationsService;
-            _processOrchestrator = processOrchestrator;
+            _operationsStorage = operationsStorage;
         }
-
+        
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
-            => Ok(await _operationsService.GetAsync(id));
+        public async Task<ActionResult<OperationDto>> Get(Guid id)
+            => Single(await _operationsStorage.GetAsync(id));
     }
 }

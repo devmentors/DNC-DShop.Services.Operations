@@ -11,12 +11,15 @@ namespace DShop.Services.Operations.Handlers
     {
         private readonly IProcessOrchestrator _processOrchestrator;
         private readonly IOperationPublisher _operationPublisher;
+        private readonly IOperationsStorage _operationsStorage;
 
         public GenericEventHandler(IProcessOrchestrator processOrchestrator,
-            IOperationPublisher operationPublisher)
+            IOperationPublisher operationPublisher,
+            IOperationsStorage operationsStorage)
         {
             _processOrchestrator = processOrchestrator;
             _operationPublisher = operationPublisher;
+            _operationsStorage = operationsStorage;
         }
 
         public async Task HandleAsync(T @event, ICorrelationContext context)
@@ -27,12 +30,19 @@ namespace DShop.Services.Operations.Handlers
 
                 return;
             }
+
             switch (@event)
             {
                 case IRejectedEvent rejectedEvent:
-                    await _operationPublisher.RejectAsync(context, rejectedEvent.Code, rejectedEvent.Reason);
+                    await _operationsStorage.SetAsync(context.Id, context.UserId,
+                        context.Name, OperationState.Rejected, context.Resource,
+                        rejectedEvent.Code, rejectedEvent.Reason);
+                    await _operationPublisher.RejectAsync(context,
+                        rejectedEvent.Code, rejectedEvent.Reason);
                     return;
                 case IEvent _:
+                    await _operationsStorage.SetAsync(context.Id, context.UserId,
+                        context.Name, OperationState.Completed, context.Resource);
                     await _operationPublisher.CompleteAsync(context);
                     return;
             }

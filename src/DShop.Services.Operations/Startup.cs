@@ -12,9 +12,7 @@ using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
 using DShop.Common.Redis;
 using DShop.Common.Swagger;
-using DShop.Services.Operations.Domain;
 using DShop.Services.Operations.Handlers;
-using DShop.Services.Operations.Subscriptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -44,9 +42,9 @@ namespace DShop.Services.Operations
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                 .AsImplementedInterfaces();
             builder.Populate(services);
+            builder.AddDispatchers();
             builder.AddRabbitMq();
             builder.AddMongo();
-            builder.AddMongoRepository<Operation>("Operations");
             builder.RegisterGeneric(typeof(GenericEventHandler<>))
                 .As(typeof(IEventHandler<>));
             builder.RegisterGeneric(typeof(GenericCommandHandler<>))

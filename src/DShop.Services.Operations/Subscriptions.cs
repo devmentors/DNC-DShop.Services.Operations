@@ -1,16 +1,16 @@
-using DShop.Common.Messages;
-using DShop.Common.RabbitMq;
-using DShop.Services.Operations.Messages.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DShop.Common.Messages;
+using DShop.Common.RabbitMq;
+using DShop.Services.Operations.Messages.Events;
 
-namespace DShop.Services.Operations.Subscriptions
+namespace DShop.Services.Operations
 {
-    public static class MessagesSubscriptions
+    public static class Subscriptions
     {
-        private static readonly Assembly MessagesAssembly = typeof(MessagesSubscriptions).Assembly;
+        private static readonly Assembly MessagesAssembly = typeof(Subscriptions).Assembly;
 
         private static readonly ISet<Type> ExcludedMessages = new HashSet<Type>(new[]
         {

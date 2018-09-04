@@ -11,12 +11,15 @@ namespace DShop.Services.Operations.Handlers
     {
         private readonly IProcessOrchestrator _processOrchestrator;
         private readonly IOperationPublisher _operationPublisher;
+        private readonly IOperationsStorage _operationsStorage;
 
         public GenericCommandHandler(IProcessOrchestrator processOrchestrator,
-            IOperationPublisher operationPublisher)
+            IOperationPublisher operationPublisher,
+            IOperationsStorage operationsStorage)
         {
             _processOrchestrator = processOrchestrator;
             _operationPublisher = operationPublisher;
+            _operationsStorage = operationsStorage;
         }
 
         public async Task HandleAsync(T command, ICorrelationContext context)
@@ -27,6 +30,9 @@ namespace DShop.Services.Operations.Handlers
 
                 return;
             }
+
+            await _operationsStorage.SetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Completed, context.Resource, string.Empty);
         }
     }
 }

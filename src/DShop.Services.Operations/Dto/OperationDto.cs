@@ -5,12 +5,11 @@ namespace DShop.Services.Operations.Dto
     public class OperationDto
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public string Name { get; set; }
-        public string Resource { get; set; }
-        public string Message { get; set; }
         public string State { get; set; }
+        public string Resource { get; set; }
         public string Code { get; set; }
-        public bool Completed { get; set; }
-        public bool Success { get; set; }        
+        public string Message { get; set; }
     }
 }

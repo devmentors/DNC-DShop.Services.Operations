@@ -8,19 +8,34 @@ namespace DShop.Services.Operations.Managers
     public class ProcessStateManager : IProcessStateManager
     {
         private readonly IOperationPublisher _operationPublisher;
+        private readonly IOperationsStorage _operationsStorage;
 
-        public ProcessStateManager(IOperationPublisher operationPublisher)
+        public ProcessStateManager(IOperationPublisher operationPublisher,
+            IOperationsStorage operationsStorage)
         {
             _operationPublisher = operationPublisher;
+            _operationsStorage = operationsStorage;
         }
 
         public async Task PendingAsync(Guid id, ICorrelationContext context)
-            => await _operationPublisher.PendingAsync(context);
+        {
+            await _operationsStorage.SetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Pending, context.Resource);
+            await _operationPublisher.PendingAsync(context);
+        }
 
         public async Task CompleteAsync(Guid id, ICorrelationContext context)
-            => await _operationPublisher.CompleteAsync(context);
+        {
+            await _operationsStorage.SetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Completed, context.Resource);
+            await _operationPublisher.CompleteAsync(context);
+        }
 
         public async Task RejectAsync(Guid id, ICorrelationContext context, string code, string message)
-            => await _operationPublisher.RejectAsync(context, code, message);
+        {
+            await _operationsStorage.SetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Rejected, context.Resource, code, message);
+            await _operationPublisher.RejectAsync(context, code, message);
+        }
     }
 }
