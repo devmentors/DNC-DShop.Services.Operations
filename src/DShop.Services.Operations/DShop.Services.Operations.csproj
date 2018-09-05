@@ -13,8 +13,10 @@
     <PackageReference Include="DShop.Common" Version="1.0.*" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Messages\Identity\Events" />
     <Folder Include="Messages\Notifications\Commands" />
     <Folder Include="Messages\Notifications\Events" />
+    <Folder Include="Messages\Operations" />
     <Folder Include="Messages\Orders\Commands" />
     <Folder Include="Messages\Products\Commands" />
     <Folder Include="Messages\Products\Events" />

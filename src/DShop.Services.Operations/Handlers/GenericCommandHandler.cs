@@ -31,8 +31,11 @@ namespace DShop.Services.Operations.Handlers
                 return;
             }
 
-            await _operationsStorage.SetAsync(context.Id, context.UserId,
-                context.Name, OperationState.Completed, context.Resource, string.Empty);
+            if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Pending, context.Resource, string.Empty))
+            {
+                await _operationPublisher.PendingAsync(context);
+            }
         }
     }
 }

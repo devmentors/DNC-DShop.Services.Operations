@@ -17,24 +17,24 @@ namespace DShop.Services.Operations.Services
             _cache = cache;
         }
 
-        public async Task SetAsync(Guid id, Guid userId, string name, OperationState state, 
-            string resource, string code = null, string message = null)
+        public async Task<bool> TrySetAsync(Guid id, Guid userId, string name, OperationState state, 
+            string resource, string code = null, string reason = null)
         {
-            var stateText = state.ToString().ToLowerInvariant();
-            var operation = await GetAsync(id) ?? new OperationDto();
-            if (operation.State == stateText || operation.State == CompletedState
-                                         || operation.State == RejectedState)
+            var newState = state.ToString().ToLowerInvariant();
+            var operation = await GetAsync(id);
+            if (operation != null && CannotUpdate(operation.State, newState))
             {
-                return;
+                return false;
             }
 
+            operation = operation ?? new OperationDto();
             operation.Id = id;
             operation.UserId = userId;
             operation.Name = name;
-            operation.State = stateText;
+            operation.State = newState;
             operation.Resource = resource;
             operation.Code = code ?? string.Empty;
-            operation.Message = message ?? string.Empty;
+            operation.Reason = reason ?? string.Empty;
             
             await _cache.SetStringAsync(id.ToString("N"),
                 JsonConvert.SerializeObject(operation),
@@ -43,7 +43,14 @@ namespace DShop.Services.Operations.Services
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
                     SlidingExpiration = TimeSpan.FromMinutes(1)
                 });
+
+            return true;
         }
+
+        private static bool CannotUpdate(string currentSate, string newState)
+            => currentSate.Equals(newState, StringComparison.InvariantCultureIgnoreCase) ||
+               currentSate.Equals(CompletedState, StringComparison.InvariantCultureIgnoreCase) ||
+               currentSate.Equals(RejectedState, StringComparison.InvariantCultureIgnoreCase);
 
         public async Task<OperationDto> GetAsync(Guid id)
         {

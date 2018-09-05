@@ -34,16 +34,20 @@ namespace DShop.Services.Operations.Handlers
             switch (@event)
             {
                 case IRejectedEvent rejectedEvent:
-                    await _operationsStorage.SetAsync(context.Id, context.UserId,
+                    if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
                         context.Name, OperationState.Rejected, context.Resource,
-                        rejectedEvent.Code, rejectedEvent.Reason);
-                    await _operationPublisher.RejectAsync(context,
-                        rejectedEvent.Code, rejectedEvent.Reason);
+                        rejectedEvent.Code, rejectedEvent.Reason))
+                    {
+                        await _operationPublisher.RejectAsync(context,
+                            rejectedEvent.Code, rejectedEvent.Reason);
+                    }
                     return;
                 case IEvent _:
-                    await _operationsStorage.SetAsync(context.Id, context.UserId,
-                        context.Name, OperationState.Completed, context.Resource);
-                    await _operationPublisher.CompleteAsync(context);
+                    if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
+                        context.Name, OperationState.Completed, context.Resource))
+                    {
+                        await _operationPublisher.CompleteAsync(context);
+                    }
                     return;
             }
         }

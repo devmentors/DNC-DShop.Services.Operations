@@ -10,6 +10,6 @@ namespace DShop.Services.Operations.Dto
         public string State { get; set; }
         public string Resource { get; set; }
         public string Code { get; set; }
-        public string Message { get; set; }
+        public string Reason { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using DShop.Common.Messages;
 using DShop.Common.RabbitMq;
-using DShop.Services.Operations.Messages.Events;
+using DShop.Services.Operations.Messages.Operations.Events;
 
 namespace DShop.Services.Operations
 {

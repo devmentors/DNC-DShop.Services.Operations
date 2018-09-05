@@ -17,6 +17,8 @@ namespace DShop.Services.Operations.Managers.Orders
         public override async Task ExecuteAsync<TMessage>(TMessage message,
             ICorrelationContext context)
         {
+            await PendingAsync(Guid.Empty, context);
+            await Task.Delay(5000);
             await CompleteAsync(Guid.Empty, context);
         }
     }

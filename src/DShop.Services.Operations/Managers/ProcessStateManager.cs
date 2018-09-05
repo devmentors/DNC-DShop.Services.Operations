@@ -19,23 +19,29 @@ namespace DShop.Services.Operations.Managers
 
         public async Task PendingAsync(Guid id, ICorrelationContext context)
         {
-            await _operationsStorage.SetAsync(context.Id, context.UserId,
-                context.Name, OperationState.Pending, context.Resource);
-            await _operationPublisher.PendingAsync(context);
+            if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Pending, context.Resource))
+            {
+                await _operationPublisher.PendingAsync(context);
+            }
         }
 
         public async Task CompleteAsync(Guid id, ICorrelationContext context)
         {
-            await _operationsStorage.SetAsync(context.Id, context.UserId,
-                context.Name, OperationState.Completed, context.Resource);
-            await _operationPublisher.CompleteAsync(context);
+            if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Completed, context.Resource))
+            {
+                await _operationPublisher.CompleteAsync(context);
+            }
         }
 
         public async Task RejectAsync(Guid id, ICorrelationContext context, string code, string message)
         {
-            await _operationsStorage.SetAsync(context.Id, context.UserId,
-                context.Name, OperationState.Rejected, context.Resource, code, message);
-            await _operationPublisher.RejectAsync(context, code, message);
+            if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
+                context.Name, OperationState.Rejected, context.Resource, code, message))
+            {
+                await _operationPublisher.RejectAsync(context, code, message);
+            }
         }
     }
 }
