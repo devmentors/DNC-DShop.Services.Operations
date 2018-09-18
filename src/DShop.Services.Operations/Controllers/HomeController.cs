@@ -4,13 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace DShop.Services.Operations.Controllers
 {
     [Route("")]
-    public class HomeController : BaseController
+    public class HomeController : ControllerBase
     {
-        public HomeController(IDispatcher dispatcher) : base(dispatcher)
-        {
-        }
-        
-        [HttpGet("")]
+        [HttpGet]
         public IActionResult Get() => Ok("DShop Operations Service");
     }
 }
