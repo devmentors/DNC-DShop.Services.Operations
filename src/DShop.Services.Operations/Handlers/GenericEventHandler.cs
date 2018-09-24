@@ -1,33 +1,35 @@
+using System;
 using System.Threading.Tasks;
+using Chronicle;
 using DShop.Common.Handlers;
 using DShop.Common.Messages;
 using DShop.Common.RabbitMq;
-using DShop.Services.Operations.Managers;
+using DShop.Services.Operations.Sagas;
 using DShop.Services.Operations.Services;
 
 namespace DShop.Services.Operations.Handlers
 {
-    public class GenericEventHandler<T> : IEventHandler<T> where T : IEvent
+    public class GenericEventHandler<T> : IEventHandler<T> where T : class, IEvent
     {
-        private readonly IProcessOrchestrator _processOrchestrator;
+        private readonly ISagaCoordinator _sagaCoordinator;
         private readonly IOperationPublisher _operationPublisher;
         private readonly IOperationsStorage _operationsStorage;
 
-        public GenericEventHandler(IProcessOrchestrator processOrchestrator,
+        public GenericEventHandler(ISagaCoordinator sagaCoordinator,
             IOperationPublisher operationPublisher,
             IOperationsStorage operationsStorage)
         {
-            _processOrchestrator = processOrchestrator;
+            _sagaCoordinator = sagaCoordinator;
             _operationPublisher = operationPublisher;
             _operationsStorage = operationsStorage;
         }
 
         public async Task HandleAsync(T @event, ICorrelationContext context)
         {
-            if (_processOrchestrator.IsProcessable<T>())
+            if (@event.IsProcessable())
             {
-                await _processOrchestrator.ExecuteAsync(@event, context);
-
+                var sagaContext = SagaContext.FromCorrelationContext(context);
+                await _sagaCoordinator.ProcessAsync(@event, sagaContext);
                 return;
             }
 
