@@ -2,6 +2,7 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Chronicle;
 using Consul;
 using DShop.Common;
 using DShop.Common.Consul;
@@ -36,6 +37,7 @@ namespace DShop.Services.Operations
             services.AddSwaggerDocs();
             services.AddConsul();
             services.AddRedis();
+            services.AddChronicle();
             services.AddInitializers(typeof(IMongoDbInitializer));
 
             var builder = new ContainerBuilder();
