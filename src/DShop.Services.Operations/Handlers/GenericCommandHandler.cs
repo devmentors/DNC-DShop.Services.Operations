@@ -3,6 +3,7 @@ using Chronicle;
 using DShop.Common.Handlers;
 using DShop.Common.Messages;
 using DShop.Common.RabbitMq;
+using DShop.Services.Operations.Sagas;
 using DShop.Services.Operations.Services;
 
 namespace DShop.Services.Operations.Handlers
@@ -24,13 +25,17 @@ namespace DShop.Services.Operations.Handlers
 
         public async Task HandleAsync(T command, ICorrelationContext context)
         {
+            if(command.IsProcessable())
+            {
+                await _sagaCoordinator.ProcessAsync(context.Id, command);
+                return;
+            }
+
             if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
                 context.Name, OperationState.Pending, context.Resource, string.Empty))
             {
                 await _operationPublisher.PendingAsync(context);
-            }
-
-            await _sagaCoordinator.ProcessAsync(context.Id, command);
+            }            
         }
     }
 }

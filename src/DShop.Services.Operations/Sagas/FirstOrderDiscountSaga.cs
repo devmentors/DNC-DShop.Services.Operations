@@ -1,37 +1,36 @@
 ﻿using Chronicle;
+using DShop.Common.RabbitMq;
 using DShop.Services.Operations.Messages.Customers.Events;
 using DShop.Services.Operations.Messages.Identity.Events;
 using DShop.Services.Operations.Messages.Orders.Commands;
-using DShop.Services.Operations.Services;
+using DShop.Services.Operations.Messages.Orders.Events;
 using System;
 using System.Threading.Tasks;
 
 namespace DShop.Services.Operations.Sagas
 {
-    public class NewCustomerDiscountSaga : Saga<NewCustomerDiscountSagaState>,
+    public class FirstOrderDiscountSaga : Saga<FirstOrderDiscountSagaState>,
         ISagaStartAction<SignedUp>,
         ISagaAction<CustomerCreated>,
-        ISagaAction<CreateOrder>
-
+        ISagaAction<OrderCreated>
     {
         private const int CreationHoursLimit = 24;
-        private readonly IOperationsStorage _operationStorage;
-        private readonly IOperationPublisher _operationPublisher;
+        
+        private readonly IBusPublisher _busPublisher;
 
-        public NewCustomerDiscountSaga(
-            IOperationsStorage operationStorage,
-            IOperationPublisher operationPublisher)
+        public FirstOrderDiscountSaga(IBusPublisher busPublisher)
         {
-            _operationStorage = operationStorage;
-            _operationPublisher = operationPublisher;
+            _busPublisher = busPublisher;
         }
 
+        //1:Save user's creation date
         public Task HandleAsync(SignedUp message)
         {
             Data.UserCreatedDate = DateTime.UtcNow;
             return Task.CompletedTask;
         }
 
+        //2: Check whether user creation hours diff fits the limit
         public Task HandleAsync(CustomerCreated message)
         {
             var diff = DateTime.UtcNow.Subtract(Data.UserCreatedDate);
@@ -41,37 +40,39 @@ namespace DShop.Services.Operations.Sagas
                 Data.CustomerCreatedDate = DateTime.UtcNow;
             }
             else
-            {
+            {                
                 Reject();
             }
 
             return Task.CompletedTask;
         }
 
-        public Task HandleAsync(CreateOrder message)
+        //3: Check whether customer creation hours diff fits the limit
+        public async Task HandleAsync(OrderCreated message)
         {
             var diff = DateTime.UtcNow.Subtract(Data.CustomerCreatedDate);
 
             if (diff.TotalHours <= CreationHoursLimit)
             {
+                await _busPublisher.SendAsync(new CreateOrderDiscount(
+                    message.Id, message.CustomerId, message.Number), CorrelationContext.Empty);
+
                 Complete();
             }
             else
             {
                 Reject();
             }
-
-            return Task.CompletedTask;
         }
 
         public async Task CompensateAsync(SignedUp message) { }
 
         public async Task CompensateAsync(CustomerCreated message) { }
 
-        public async Task CompensateAsync(CreateOrder message) { }
+        public async Task CompensateAsync(OrderCreated message) { }
     }
 
-    public class NewCustomerDiscountSagaState
+    public class FirstOrderDiscountSagaState
     {
         public DateTime UserCreatedDate { get; set; }
         public DateTime CustomerCreatedDate { get; set; }
