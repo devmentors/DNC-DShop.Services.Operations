@@ -7,7 +7,7 @@ namespace DShop.Services.Operations.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BaseController : Controller
+    public class BaseController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;
 
@@ -15,7 +15,7 @@ namespace DShop.Services.Operations.Controllers
         {
             _dispatcher = dispatcher;
         }
-        
+
         protected async Task<TResult> QueryAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
             => await _dispatcher.QueryAsync(query);
 

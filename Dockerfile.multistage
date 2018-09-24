@@ -1,0 +1,12 @@
+FROM microsoft/dotnet:2.1-sdk AS build
+WORKDIR /app
+COPY . .
+RUN dotnet publish src/DShop.Services.Operations -c Release -o out --source https://api.nuget.org/v3/index.json --source https://www.myget.org/F/dnc-dshop/api/v3/index.json
+
+FROM microsoft/dotnet:2.1-aspnetcore-runtime
+WORKDIR /app
+COPY --from=build /app/src/DShop.Services.Operations/out .
+ENV ASPNETCORE_URLS http://*:5000
+ENV ASPNETCORE_ENVIRONMENT docker
+EXPOSE 5000
+ENTRYPOINT dotnet DShop.Services.Operations.dll

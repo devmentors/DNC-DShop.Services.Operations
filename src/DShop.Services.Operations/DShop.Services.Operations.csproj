@@ -2,7 +2,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
-   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <ProjectReference Include="..\..\..\DNC-DShop.Common\src\DShop.Common\DShop.Common.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">

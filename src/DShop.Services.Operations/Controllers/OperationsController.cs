@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace DShop.Services.Operations.Controllers
 {
     [Route("[controller]")]
-    [ApiController]
     public class OperationsController : BaseController
     {
         private readonly IOperationsStorage _operationsStorage;

@@ -14,7 +14,8 @@ namespace DShop.Services.Operations.Messages.Products.Commands
         public decimal Price { get; }
         
         [JsonConstructor]
-        public CreateProduct(Guid id, string name, string description, string vendor, decimal price)
+        public CreateProduct(Guid id, string name, 
+            string description, string vendor, decimal price)
         {
             Id = id;
             Name = name;
