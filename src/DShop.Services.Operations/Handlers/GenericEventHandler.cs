@@ -3,7 +3,6 @@ using Chronicle;
 using DShop.Common.Handlers;
 using DShop.Common.Messages;
 using DShop.Common.RabbitMq;
-using DShop.Services.Operations.Managers;
 using DShop.Services.Operations.Sagas;
 using DShop.Services.Operations.Services;
 

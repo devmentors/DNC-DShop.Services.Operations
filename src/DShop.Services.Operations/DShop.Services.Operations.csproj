@@ -17,7 +17,6 @@
     <Folder Include="Messages\Notifications\Commands" />
     <Folder Include="Messages\Notifications\Events" />
     <Folder Include="Messages\Operations" />
-    <Folder Include="Messages\Orders\Commands" />
     <Folder Include="Messages\Products\Commands" />
     <Folder Include="Messages\Products\Events" />
   </ItemGroup>
