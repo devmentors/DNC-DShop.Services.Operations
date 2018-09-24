@@ -17,7 +17,7 @@ namespace DShop.Services.Operations.Controllers
         }
         
         protected async Task<TResult> QueryAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
-            => await _dispatcher.QueryAsync<TQuery, TResult>(query);
+            => await _dispatcher.QueryAsync(query);
 
         protected ActionResult<T> Single<T>(T data)
         {
