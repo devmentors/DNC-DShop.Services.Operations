@@ -27,7 +27,8 @@ namespace DShop.Services.Operations.Handlers
         {
             if(command.IsProcessable())
             {
-                await _sagaCoordinator.ProcessAsync(context.UserId, command);
+                var sagaContext = SagaContext.FromCorrelationContext(context);
+                await _sagaCoordinator.ProcessAsync(command, sagaContext);
                 return;
             }
 

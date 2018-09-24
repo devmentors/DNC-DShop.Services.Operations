@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Chronicle;
 using DShop.Common.Handlers;
@@ -27,7 +28,8 @@ namespace DShop.Services.Operations.Handlers
         {
             if (@event.IsProcessable())
             {
-                await _sagaCoordinator.ProcessAsync(context.UserId, @event);
+                var sagaContext = SagaContext.FromCorrelationContext(context);
+                await _sagaCoordinator.ProcessAsync(@event, sagaContext);
                 return;
             }
 

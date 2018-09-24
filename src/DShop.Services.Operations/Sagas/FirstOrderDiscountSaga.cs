@@ -10,45 +10,35 @@ using System.Threading.Tasks;
 namespace DShop.Services.Operations.Sagas
 {
     public class FirstOrderDiscountSaga : Saga<FirstOrderDiscountSagaState>,
-        ISagaStartAction<SignedUp>,
-        ISagaAction<CustomerCreated>,
+        ISagaStartAction<CustomerCreated>,
         ISagaAction<OrderCreated>
     {
         private const int CreationHoursLimit = 24;
-        
+
         private readonly IBusPublisher _busPublisher;
 
         public FirstOrderDiscountSaga(IBusPublisher busPublisher)
-        {
-            _busPublisher = busPublisher;
-        }
+            => _busPublisher = busPublisher;
 
-        //1:Save user's creation date
-        public Task HandleAsync(SignedUp message)
+        public override Guid ResolveId(object message, ISagaContext context)
         {
-            Data.UserCreatedDate = DateTime.UtcNow;
-            return Task.CompletedTask;
-        }
-
-        //2: Check whether user creation hours diff fits the limit
-        public Task HandleAsync(CustomerCreated message)
-        {
-            var diff = DateTime.UtcNow.Subtract(Data.UserCreatedDate);
-
-            if (diff.TotalHours <= CreationHoursLimit)
+            switch (message)
             {
-                Data.CustomerCreatedDate = DateTime.UtcNow;
+                case CustomerCreated cc: return cc.Id;
+                case OrderCreated oc: return oc.CustomerId;
+                default: return base.ResolveId(message, context);
             }
-            else
-            {                
-                Reject();
-            }
+        }
 
+        //1: Check whether customer creation hours diff fits the limit
+        public Task HandleAsync(CustomerCreated message, ISagaContext context)
+        {
+            Data.CustomerCreatedDate = DateTime.UtcNow;
             return Task.CompletedTask;
         }
 
-        //3: Check whether customer creation hours diff fits the limit
-        public async Task HandleAsync(OrderCreated message)
+        //2: Check whether customer creation hours diff fits the limit
+        public async Task HandleAsync(OrderCreated message, ISagaContext context)
         {
             var diff = DateTime.UtcNow.Subtract(Data.CustomerCreatedDate);
 
@@ -65,16 +55,16 @@ namespace DShop.Services.Operations.Sagas
             }
         }
 
-        public async Task CompensateAsync(SignedUp message) { }
+#region Compensate
 
-        public async Task CompensateAsync(CustomerCreated message) { }
+        public async Task CompensateAsync(CustomerCreated message, ISagaContext context) { }
 
-        public async Task CompensateAsync(OrderCreated message) { }
+        public async Task CompensateAsync(OrderCreated message, ISagaContext context) { }
+#endregion
     }
 
     public class FirstOrderDiscountSagaState
     {
-        public DateTime UserCreatedDate { get; set; }
         public DateTime CustomerCreatedDate { get; set; }
     }
 }
