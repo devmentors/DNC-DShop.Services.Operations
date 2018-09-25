@@ -9,12 +9,16 @@ using System.Threading.Tasks;
 
 namespace DShop.Services.Operations.Sagas
 {
+    public class FirstOrderDiscountSagaState
+    {
+        public DateTime CustomerCreatedAt { get; set; }
+    }
+
     public class FirstOrderDiscountSaga : Saga<FirstOrderDiscountSagaState>,
         ISagaStartAction<CustomerCreated>,
         ISagaAction<OrderCreated>
     {
         private const int CreationHoursLimit = 24;
-
         private readonly IBusPublisher _busPublisher;
 
         public FirstOrderDiscountSaga(IBusPublisher busPublisher)
@@ -31,16 +35,16 @@ namespace DShop.Services.Operations.Sagas
         }
 
         //1: Check whether customer creation hours diff fits the limit
-        public Task HandleAsync(CustomerCreated message, ISagaContext context)
+        public async Task HandleAsync(CustomerCreated message, ISagaContext context)
         {
-            Data.CustomerCreatedDate = DateTime.UtcNow;
-            return Task.CompletedTask;
+            Data.CustomerCreatedAt = DateTime.UtcNow;
+            await Task.CompletedTask;
         }
 
         //2: Check whether customer creation hours diff fits the limit
         public async Task HandleAsync(OrderCreated message, ISagaContext context)
         {
-            var diff = DateTime.UtcNow.Subtract(Data.CustomerCreatedDate);
+            var diff = DateTime.UtcNow.Subtract(Data.CustomerCreatedAt);
 
             if (diff.TotalHours <= CreationHoursLimit)
             {
@@ -56,15 +60,17 @@ namespace DShop.Services.Operations.Sagas
         }
 
 #region Compensate
+        public async Task CompensateAsync(CustomerCreated message, ISagaContext context) 
+        {
+            //TOOD: Implement compensation
+            await Task.CompletedTask;
+        }
 
-        public async Task CompensateAsync(CustomerCreated message, ISagaContext context) { }
-
-        public async Task CompensateAsync(OrderCreated message, ISagaContext context) { }
+        public async Task CompensateAsync(OrderCreated message, ISagaContext context) 
+        {
+            //TOOD: Implement compensation
+            await Task.CompletedTask;
+        }
 #endregion
-    }
-
-    public class FirstOrderDiscountSagaState
-    {
-        public DateTime CustomerCreatedDate { get; set; }
     }
 }
