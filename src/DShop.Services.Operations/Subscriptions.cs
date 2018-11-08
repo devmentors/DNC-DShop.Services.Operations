@@ -41,7 +41,7 @@ namespace DShop.Services.Operations
                 .GetMethod(subscribeMethod)
                 .MakeGenericMethod(mt)
                 .Invoke(subscriber,
-                    new object[] {mt.GetCustomAttribute<MessageNamespaceAttribute>()?.Namespace, null}));
+                    new object[] {mt.GetCustomAttribute<MessageNamespaceAttribute>()?.Namespace, null, null}));
 
             return subscriber;
         }
