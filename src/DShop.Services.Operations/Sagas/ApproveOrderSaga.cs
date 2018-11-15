@@ -12,10 +12,6 @@ namespace DShop.Services.Operations.Sagas
 {
     public class ApproveOrderSagaState
     {
-        public Guid OrderId { get; set; }
-        public Guid CustomerId { get; set; }
-        public bool ProductsReserved { get; set; }
-        public IDictionary<Guid, int> Products { get; set; }
     }
 
     public class ApproveOrderSaga : Saga<ApproveOrderSagaState>,
@@ -45,31 +41,22 @@ namespace DShop.Services.Operations.Sagas
 
         public async Task HandleAsync(OrderCreated message, ISagaContext context)
         {
-            Data.OrderId = message.Id;
-            Data.CustomerId = message.CustomerId;
-            Data.Products = message.Products;
             await _busPublisher.SendAsync(new ReserveProducts(message.Id, message.Products), CorrelationContext.Empty);
         }
 
         public async Task CompensateAsync(OrderCreated message, ISagaContext context)
         {
-            await _busPublisher.SendAsync(new CancelOrder(Data.OrderId, Data.CustomerId), CorrelationContext.Empty);
+            await _busPublisher.SendAsync(new CancelOrder(message.Id, message.CustomerId), CorrelationContext.Empty);
         }
 
         public async Task HandleAsync(ProductsReserved message, ISagaContext context)
         {
-            Data.ProductsReserved = true;
-            await _busPublisher.SendAsync(new ApproveOrder(Data.OrderId), CorrelationContext.Empty);
+            await _busPublisher.SendAsync(new ApproveOrder(message.OrderId), CorrelationContext.Empty);
         }
 
         public async Task CompensateAsync(ProductsReserved message, ISagaContext context)
         {
-            if (!Data.ProductsReserved)
-            {
-                return;
-            }
-
-            await _busPublisher.SendAsync(new ReleaseProducts(Data.OrderId, Data.Products), CorrelationContext.Empty);
+            await _busPublisher.SendAsync(new ReleaseProducts(message.OrderId, message.Products), CorrelationContext.Empty);
         }
 
         public async Task HandleAsync(ReserveProductsRejected message, ISagaContext context)
