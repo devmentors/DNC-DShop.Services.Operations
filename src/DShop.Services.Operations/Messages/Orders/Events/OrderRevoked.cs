@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using DShop.Common.Messages;
 using Newtonsoft.Json;
 
 namespace DShop.Services.Operations.Messages.Orders.Events
 {
-    [MessageNamespace("orders")]
-    public class OrderCanceled : IEvent
+    public class OrderRevoked : IEvent
     {
         public Guid Id { get; }
         public Guid CustomerId { get; }
-        public IDictionary<Guid, int> Products { get; }
 
         [JsonConstructor]
-        public OrderCanceled(Guid id, Guid customerId, IDictionary<Guid, int> products)
+        public OrderRevoked(Guid id, Guid customerId)
         {
             Id = id;
             CustomerId = customerId;
-            Products = products;
         }
     }
 }

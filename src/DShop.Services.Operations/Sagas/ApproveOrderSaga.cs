@@ -10,12 +10,10 @@ using DShop.Services.Operations.Messages.Products.Events;
 
 namespace DShop.Services.Operations.Sagas
 {
-    public class ApproveOrderSagaState
-    {
-    }
-
-    public class ApproveOrderSaga : Saga<ApproveOrderSagaState>,
+    public class ApproveOrderSaga : Saga<ApproveOrderSaga.SagaState>,
         ISagaStartAction<OrderCreated>,
+        ISagaAction<OrderRevoked>,
+        ISagaAction<RevokeOrderRejected>,
         ISagaAction<ProductsReserved>,
         ISagaAction<ReserveProductsRejected>,
         ISagaAction<OrderApproved>,
@@ -46,7 +44,7 @@ namespace DShop.Services.Operations.Sagas
 
         public async Task CompensateAsync(OrderCreated message, ISagaContext context)
         {
-            await _busPublisher.SendAsync(new CancelOrder(message.Id, message.CustomerId), CorrelationContext.Empty);
+            await _busPublisher.SendAsync(new RevokeOrder(message.Id, message.CustomerId), CorrelationContext.Empty);
         }
 
         public async Task HandleAsync(ProductsReserved message, ISagaContext context)
@@ -56,7 +54,8 @@ namespace DShop.Services.Operations.Sagas
 
         public async Task CompensateAsync(ProductsReserved message, ISagaContext context)
         {
-            await _busPublisher.SendAsync(new ReleaseProducts(message.OrderId, message.Products), CorrelationContext.Empty);
+            await _busPublisher.SendAsync(new ReleaseProducts(message.OrderId, message.Products),
+                CorrelationContext.Empty);
         }
 
         public async Task HandleAsync(ReserveProductsRejected message, ISagaContext context)
@@ -90,6 +89,33 @@ namespace DShop.Services.Operations.Sagas
         public async Task CompensateAsync(ApproveOrderRejected message, ISagaContext context)
         {
             await Task.CompletedTask;
+        }
+
+        public async Task HandleAsync(OrderRevoked message, ISagaContext context)
+        {
+            Complete();
+            await Task.CompletedTask;
+        }
+
+        public async Task CompensateAsync(OrderRevoked message, ISagaContext context)
+        {
+            await Task.CompletedTask;
+        }
+
+        //Edge case
+        public async Task HandleAsync(RevokeOrderRejected message, ISagaContext context)
+        {
+            Reject();
+            await Task.CompletedTask;
+        }
+
+        public async Task CompensateAsync(RevokeOrderRejected message, ISagaContext context)
+        {
+            await Task.CompletedTask;
+        }
+
+        public class SagaState
+        {
         }
     }
 }
