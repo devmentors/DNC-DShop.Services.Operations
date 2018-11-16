@@ -8,7 +8,7 @@ using DShop.Services.Operations.Messages.Products.Events;
 namespace DShop.Services.Operations.Sagas
 {
     public class CancelOrderSaga : Saga<CancelOrderSaga.SagaState>,
-        ISagaAction<OrderCanceled>,
+        ISagaStartAction<OrderCanceled>,
         ISagaAction<CancelOrderRejected>,
         ISagaAction<ProductsReleased>,
         ISagaAction<ReleaseProductsRejected>
