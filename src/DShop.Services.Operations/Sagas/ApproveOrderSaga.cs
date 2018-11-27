@@ -10,7 +10,7 @@ using DShop.Services.Operations.Messages.Products.Events;
 
 namespace DShop.Services.Operations.Sagas
 {
-    public class ApproveOrderSaga : Saga<ApproveOrderSaga.SagaState>,
+    public class ApproveOrderSaga : Saga,
         ISagaStartAction<OrderCreated>,
         ISagaAction<OrderRevoked>,
         ISagaAction<RevokeOrderRejected>,
@@ -112,10 +112,6 @@ namespace DShop.Services.Operations.Sagas
         public async Task CompensateAsync(RevokeOrderRejected message, ISagaContext context)
         {
             await Task.CompletedTask;
-        }
-
-        public class SagaState
-        {
         }
     }
 }

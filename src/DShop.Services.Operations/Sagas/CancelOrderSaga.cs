@@ -7,7 +7,7 @@ using DShop.Services.Operations.Messages.Products.Events;
 
 namespace DShop.Services.Operations.Sagas
 {
-    public class CancelOrderSaga : Saga<CancelOrderSaga.SagaState>,
+    public class CancelOrderSaga : Saga,
         ISagaStartAction<OrderCanceled>,
         ISagaAction<CancelOrderRejected>,
         ISagaAction<ProductsReleased>,
@@ -64,10 +64,6 @@ namespace DShop.Services.Operations.Sagas
         public async Task CompensateAsync(ReleaseProductsRejected message, ISagaContext context)
         {
             await Task.CompletedTask;
-        }
-
-        public class SagaState
-        {
         }
     }
 }
