@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Chronicle;
 using DShop.Common.Handlers;
@@ -26,7 +25,7 @@ namespace DShop.Services.Operations.Handlers
 
         public async Task HandleAsync(T @event, ICorrelationContext context)
         {
-            if (@event.IsProcessable())
+            if (@event.BelongsToSaga())
             {
                 var sagaContext = SagaContext.FromCorrelationContext(context);
                 await _sagaCoordinator.ProcessAsync(@event, sagaContext);
@@ -36,20 +35,16 @@ namespace DShop.Services.Operations.Handlers
             switch (@event)
             {
                 case IRejectedEvent rejectedEvent:
-                    if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
+                    await _operationsStorage.SetAsync(context.Id, context.UserId,
                         context.Name, OperationState.Rejected, context.Resource,
-                        rejectedEvent.Code, rejectedEvent.Reason))
-                    {
-                        await _operationPublisher.RejectAsync(context,
-                            rejectedEvent.Code, rejectedEvent.Reason);
-                    }
+                        rejectedEvent.Code, rejectedEvent.Reason);
+                    await _operationPublisher.RejectAsync(context,
+                        rejectedEvent.Code, rejectedEvent.Reason);
                     return;
                 case IEvent _:
-                    if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
-                        context.Name, OperationState.Completed, context.Resource))
-                    {
-                        await _operationPublisher.CompleteAsync(context);
-                    }
+                    await _operationsStorage.SetAsync(context.Id, context.UserId,
+                        context.Name, OperationState.Completed, context.Resource);
+                    await _operationPublisher.CompleteAsync(context);
                     return;
             }
         }

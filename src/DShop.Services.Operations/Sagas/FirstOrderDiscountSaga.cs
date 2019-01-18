@@ -1,7 +1,6 @@
 ﻿using Chronicle;
 using DShop.Common.RabbitMq;
 using DShop.Services.Operations.Messages.Customers.Events;
-using DShop.Services.Operations.Messages.Identity.Events;
 using DShop.Services.Operations.Messages.Orders.Commands;
 using DShop.Services.Operations.Messages.Orders.Events;
 using System;

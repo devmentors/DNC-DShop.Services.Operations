@@ -1,4 +1,3 @@
-using DShop.Common.Dispatchers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DShop.Services.Operations.Controllers

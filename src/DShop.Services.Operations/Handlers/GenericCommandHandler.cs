@@ -25,18 +25,13 @@ namespace DShop.Services.Operations.Handlers
 
         public async Task HandleAsync(T command, ICorrelationContext context)
         {
-            if(command.IsProcessable())
+            if (!command.BelongsToSaga())
             {
-                var sagaContext = SagaContext.FromCorrelationContext(context);
-                await _sagaCoordinator.ProcessAsync(command, sagaContext);
                 return;
             }
 
-            if (await _operationsStorage.TrySetAsync(context.Id, context.UserId,
-                context.Name, OperationState.Pending, context.Resource, string.Empty))
-            {
-                await _operationPublisher.PendingAsync(context);
-            }            
+            var sagaContext = SagaContext.FromCorrelationContext(context);
+            await _sagaCoordinator.ProcessAsync(command, sagaContext);
         }
     }
 }

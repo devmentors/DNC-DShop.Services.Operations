@@ -8,7 +8,7 @@ namespace DShop.Services.Operations.Services
     {
         Task<OperationDto> GetAsync(Guid id);
 
-        Task<bool> TrySetAsync(Guid id, Guid userId, string name,  OperationState state, 
+        Task SetAsync(Guid id, Guid userId, string name,  OperationState state, 
             string resource, string code = null, string reason = null);
     }
 }
