@@ -29,7 +29,6 @@ namespace DShop.Services.Operations.Handlers
             {
                 var sagaContext = SagaContext.FromCorrelationContext(context);
                 await _sagaCoordinator.ProcessAsync(@event, sagaContext);
-                return;
             }
 
             switch (@event)
