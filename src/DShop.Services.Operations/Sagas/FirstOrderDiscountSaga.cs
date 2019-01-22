@@ -48,7 +48,7 @@ namespace DShop.Services.Operations.Sagas
             if (diff.TotalHours <= CreationHoursLimit)
             {
                 await _busPublisher.SendAsync(new CreateOrderDiscount(
-                    message.Id, message.CustomerId), CorrelationContext.Empty);
+                    message.Id, message.CustomerId, 10), CorrelationContext.Empty);
 
                 Complete();
             }

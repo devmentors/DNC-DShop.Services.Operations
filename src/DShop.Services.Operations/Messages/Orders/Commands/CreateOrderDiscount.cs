@@ -9,12 +9,14 @@ namespace DShop.Services.Operations.Messages.Orders.Commands
     {
         public Guid Id { get; }
         public Guid CustomerId { get; }
+        public int Percentage { get; }
 
         [JsonConstructor]
-        public CreateOrderDiscount(Guid id, Guid customerId)
+        public CreateOrderDiscount(Guid id, Guid customerId, int percentage)
         {
             Id = id;
             CustomerId = customerId;
+            Percentage = percentage;
         }
     }
 }
