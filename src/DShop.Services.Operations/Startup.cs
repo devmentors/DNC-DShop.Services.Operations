@@ -8,6 +8,7 @@ using DShop.Common;
 using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
 using DShop.Common.Handlers;
+using DShop.Common.Jaeger;
 using DShop.Common.Mongo;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
@@ -36,6 +37,8 @@ namespace DShop.Services.Operations
             services.AddCustomMvc();
             services.AddSwaggerDocs();
             services.AddConsul();
+            services.AddJaeger();
+            services.AddOpenTracing();
             services.AddRedis();
             services.AddChronicle();
             services.AddInitializers(typeof(IMongoDbInitializer));

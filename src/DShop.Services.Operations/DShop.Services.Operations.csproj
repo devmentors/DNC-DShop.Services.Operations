@@ -11,6 +11,7 @@
   </ItemGroup> 
   <ItemGroup>
     <PackageReference Include="Chronicle_" Version="1.6.0" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.5.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Messages\Identity\Events" />
