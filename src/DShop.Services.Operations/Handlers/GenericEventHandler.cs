@@ -5,6 +5,7 @@ using DShop.Common.Messages;
 using DShop.Common.RabbitMq;
 using DShop.Services.Operations.Sagas;
 using DShop.Services.Operations.Services;
+using SagaContext = DShop.Services.Operations.Sagas.SagaContext;
 
 namespace DShop.Services.Operations.Handlers
 {
